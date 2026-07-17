@@ -4,6 +4,13 @@ export const Route = createFileRoute('/')({
   component: LandingPage,
 });
 
+const CHROME_ZIP =
+  'https://github.com/balb-0/adalove-scrapper/releases/download/v0.1/extension-0.1.0-chrome.zip';
+const FIREFOX_ZIP =
+  'https://github.com/balb-0/adalove-scrapper/releases/download/v0.1/extension-0.1.0-firefox.zip';
+const README_DEV_URL =
+  'https://github.com/balb-0/adalove-scrapper#usando-antes-da-publicação-nas-stores';
+
 function LandingPage() {
   return (
     <div className="max-w-4xl mx-auto px-6 py-16">
@@ -38,36 +45,43 @@ function LandingPage() {
       </div>
 
       <div className="flex gap-4 flex-wrap">
-        <button
-          type="button"
-          className="rounded-md px-6 py-3 font-semibold cursor-not-allowed opacity-60"
+        <a
+          href={CHROME_ZIP}
+          className="rounded-md px-6 py-3 font-semibold transition-colors"
           style={{
             backgroundColor: 'var(--primary)',
             color: 'var(--primary-fg)',
           }}
-          disabled
         >
-          instalar no Chrome — em breve
-        </button>
-        <button
-          type="button"
-          className="rounded-md px-6 py-3 font-semibold cursor-not-allowed opacity-60"
+          baixar pro Chrome
+        </a>
+        <a
+          href={FIREFOX_ZIP}
+          className="rounded-md px-6 py-3 font-semibold transition-colors"
           style={{
             backgroundColor: 'var(--accent)',
             color: 'var(--accent-fg)',
           }}
-          disabled
         >
-          instalar no Firefox — em breve
-        </button>
+          baixar pro Firefox
+        </a>
       </div>
 
       <p
-        className="mt-16 font-mono text-sm"
+        className="mt-6 font-mono text-sm"
         style={{ color: 'var(--foreground-muted)' }}
       >
-        V1 em desenvolvimento — só landing por enquanto. As rotas /import e
-        /aula/:id chegam com o restante do web app.
+        as stores ainda estão revisando. enquanto isso,{' '}
+        <a
+          href={README_DEV_URL}
+          target="_blank"
+          rel="noopener noreferrer"
+          className="underline"
+          style={{ color: 'var(--primary)' }}
+        >
+          instala em modo dev
+        </a>{' '}
+        — leva 30 segundos.
       </p>
     </div>
   );
