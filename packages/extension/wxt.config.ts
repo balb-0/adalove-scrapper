@@ -17,6 +17,12 @@ export default defineConfig({
     browser_specific_settings: {
       gecko: {
         id: 'adalove-scrapper@balb-0',
+        // Firefox AMO exige declaração explícita de coleta.
+        // Nada é coletado: dados passam do content script → popup → outra aba
+        // via URL fragment (client-side), nunca tocam servidor de terceiro.
+        data_collection_permissions: {
+          required: ['none'],
+        },
       },
     },
   },
