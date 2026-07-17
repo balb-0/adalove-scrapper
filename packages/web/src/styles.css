@@ -1,0 +1,92 @@
+@import url('https://fonts.googleapis.com/css2?family=Macondo&family=JetBrains+Mono:wght@400;700&display=swap');
+@import 'tailwindcss';
+
+/*
+ * TOKENS — Retro + paleta Adalove real
+ * Hex tirados do palette extractor do Adalove (PDF do user).
+ * Retro é hand-lettered, tudo em Macondo; metadados em JetBrains Mono pra scan.
+ */
+
+@theme {
+  --font-display: 'Macondo', cursive;
+  --font-body: 'Macondo', cursive;
+  --font-mono: 'JetBrains Mono', monospace;
+
+  --radius-sm: 0.25rem; /* 4px */
+  --radius-md: 0.5rem;  /* 8px */
+  --radius-lg: 0.75rem; /* 12px */
+}
+
+@layer base {
+  :root {
+    /* LIGHT como default */
+    --surface: #FAF7F0;          /* creme quente */
+    --surface-elevated: #FFFFFF;
+    --surface-muted: #F2F2F2;    /* Adalove neutral */
+    --foreground: #161220;       /* Adalove near-black roxo */
+    --foreground-muted: #8C8895; /* Adalove cinza médio */
+    --border: #E0E0E0;
+    --primary: #412B74;          /* roxo escuro Adalove */
+    --primary-fg: #FFFFFF;
+    --primary-soft: #A183E3;     /* lavanda Adalove */
+    --accent: #F26E02;           /* laranja Adalove (book-open-reader) */
+    --accent-fg: #FFFFFF;
+    --danger: #FF4545;           /* vermelho Adalove vibrante */
+    --danger-soft: #E84A4A;      /* vermelho suavizado — tag Prova */
+    --danger-fg: #FFFFFF;
+    --success: #10B981;
+  }
+
+  .dark {
+    --surface: #161220;          /* Adalove dark */
+    --surface-elevated: #251E32; /* Adalove sidebar dark */
+    --surface-muted: #2D253F;    /* Adalove card dark */
+    --foreground: #F9F9F9;
+    --foreground-muted: #B3B3C3;
+    --border: #2D253F;
+    --primary: #A183E3;
+    --primary-fg: #161220;
+    --primary-soft: #7F9BEC;
+    --accent: #FF8C42;
+    --accent-fg: #161220;
+    --danger: #FF4545;
+    --danger-soft: #E84A4A;
+    --danger-fg: #FFFFFF;
+    --success: #34D399;
+  }
+
+  html, body {
+    background-color: var(--surface);
+    color: var(--foreground);
+    font-family: var(--font-body);
+    font-size: 18px;
+    line-height: 1.6;
+  }
+
+  /* Prefere `system`: se não houver classe `.light` ou `.dark`, usa media query. */
+  @media (prefers-color-scheme: dark) {
+    :root:not(.light) {
+      --surface: #161220;
+      --surface-elevated: #251E32;
+      --surface-muted: #2D253F;
+      --foreground: #F9F9F9;
+      --foreground-muted: #B3B3C3;
+      --border: #2D253F;
+      --primary: #A183E3;
+      --primary-fg: #161220;
+      --primary-soft: #7F9BEC;
+      --accent: #FF8C42;
+      --accent-fg: #161220;
+      --danger: #FF4545;
+      --danger-soft: #E84A4A;
+      --danger-fg: #FFFFFF;
+      --success: #34D399;
+    }
+  }
+}
+
+/* Utilities pra usar nos componentes */
+@utility font-mono-tabular {
+  font-family: var(--font-mono);
+  font-variant-numeric: tabular-nums;
+}

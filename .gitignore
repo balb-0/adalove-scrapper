@@ -1,3 +1,6 @@
+# auto-generated
+packages/web/src/routeTree.gen.ts
+
 # deps
 node_modules/
 .pnpm-store/
