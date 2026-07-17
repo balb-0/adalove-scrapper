@@ -72,14 +72,6 @@ PRs bem-vindas. Antes de mandar:
 2. `pnpm typecheck` — TypeScript strict, sem warning
 3. se tocou parser, adicione um fixture representativo em `fixtures/` e um teste
 
-Ideias abertas na V2 (issues welcome):
-
-- **compilador de `.md` pós-aula** pra estudo de prova (pega N aulas + gera um contexto único)
-- **interceptação da API do Adalove** em vez de clicar em modais (mais rápido, sem race condition)
-- **presets/biblioteca de mega-prompts** (resumo, flashcards, prova amanhã)
-- **hub da turma** — compartilhar scrapes entre alunos via URL
-
-
 ## Contribuindo
 
 O projeto ta aberto. Se quiser melhorar alguma coisa:
@@ -97,4 +89,4 @@ MIT - pode usar a vontade. Sem fazer besteira.
 
 ---
 
-Feito com vontade de nunca mais fazer autoestudo, por [Vitor Balbo](https://github.com/vitorbalbo)
+Feito com vontade de nunca mais fazer autoestudo, por [Vitor Balbo](https://github.com/balb-0)
