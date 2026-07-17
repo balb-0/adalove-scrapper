@@ -1,41 +1,19 @@
-import type { ReactNode } from 'react';
-import {
-  Outlet,
-  createRootRoute,
-  HeadContent,
-  Scripts,
-  Link,
-} from '@tanstack/react-router';
+import { Outlet, createRootRoute, Link } from '@tanstack/react-router';
 import { ThemeToggle } from '../components/ThemeToggle.tsx';
 
 export const Route = createRootRoute({
-  head: () => ({
-    meta: [
-      { charSet: 'utf-8' },
-      { name: 'viewport', content: 'width=device-width, initial-scale=1' },
-      { title: 'adalove-scrapper' },
-      {
-        name: 'description',
-        content:
-          'Preparador de aula do Inteli — pega os autoestudos, monta o mega-prompt, cola no NotebookLM.',
-      },
-    ],
-    links: [{ rel: 'icon', href: '/favicon.png' }],
-  }),
   component: RootComponent,
 });
 
 function RootComponent() {
   return (
-    <RootDocument>
-      <div className="min-h-screen flex flex-col">
-        <Header />
-        <main className="flex-1">
-          <Outlet />
-        </main>
-        <Footer />
-      </div>
-    </RootDocument>
+    <div className="min-h-screen flex flex-col">
+      <Header />
+      <main className="flex-1">
+        <Outlet />
+      </main>
+      <Footer />
+    </div>
   );
 }
 
@@ -84,31 +62,3 @@ function Footer() {
   );
 }
 
-function RootDocument({ children }: Readonly<{ children: ReactNode }>) {
-  return (
-    <html suppressHydrationWarning>
-      <head>
-        <HeadContent />
-        <script
-          // eslint-disable-next-line react/no-danger
-          dangerouslySetInnerHTML={{
-            __html: `
-              (function() {
-                try {
-                  var t = localStorage.getItem('adalove-scrapper:theme');
-                  if (t === 'light' || t === 'dark') {
-                    document.documentElement.classList.add(t);
-                  }
-                } catch (e) {}
-              })();
-            `,
-          }}
-        />
-      </head>
-      <body>
-        {children}
-        <Scripts />
-      </body>
-    </html>
-  );
-}

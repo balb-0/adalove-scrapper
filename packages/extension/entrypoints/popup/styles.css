@@ -13,8 +13,8 @@
   --danger-fg: #FFFFFF;
   --success: #10B981;
 
-  --font-display: 'Macondo', cursive;
-  --font-mono: 'JetBrains Mono', monospace;
+  --font-display: 'Helvetica Neue', Helvetica, Arial, system-ui, sans-serif;
+  --font-mono: 'JetBrains Mono', ui-monospace, 'SF Mono', monospace;
 }
 
 @media (prefers-color-scheme: dark) {

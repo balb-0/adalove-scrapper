@@ -1,0 +1,27 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>adalove-scrapper</title>
+    <meta
+      name="description"
+      content="Preparador de aula do Inteli — pega os autoestudos, monta o mega-prompt, cola no NotebookLM."
+    />
+    <link rel="icon" href="/favicon.png" />
+    <script>
+      (function () {
+        try {
+          var t = localStorage.getItem('adalove-scrapper:theme');
+          if (t === 'light' || t === 'dark') {
+            document.documentElement.classList.add(t);
+          }
+        } catch (e) {}
+      })();
+    </script>
+  </head>
+  <body>
+    <div id="root"></div>
+    <script type="module" src="/src/main.tsx"></script>
+  </body>
+</html>

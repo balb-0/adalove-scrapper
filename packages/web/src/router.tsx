@@ -10,3 +10,10 @@ export function getRouter() {
     defaultPreload: 'intent',
   });
 }
+
+// Type-safe router register pra as Link components.
+declare module '@tanstack/react-router' {
+  interface Register {
+    router: ReturnType<typeof getRouter>;
+  }
+}

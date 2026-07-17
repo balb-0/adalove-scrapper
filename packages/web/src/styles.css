@@ -1,4 +1,4 @@
-@import url('https://fonts.googleapis.com/css2?family=Macondo&family=JetBrains+Mono:wght@400;700&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;700&display=swap');
 @import 'tailwindcss';
 
 /*
@@ -8,9 +8,9 @@
  */
 
 @theme {
-  --font-display: 'Macondo', cursive;
-  --font-body: 'Macondo', cursive;
-  --font-mono: 'JetBrains Mono', monospace;
+  --font-display: 'Helvetica Neue', Helvetica, Arial, system-ui, sans-serif;
+  --font-body: 'Helvetica Neue', Helvetica, Arial, system-ui, sans-serif;
+  --font-mono: 'JetBrains Mono', ui-monospace, 'SF Mono', monospace;
 
   --radius-sm: 0.25rem; /* 4px */
   --radius-md: 0.5rem;  /* 8px */
@@ -59,8 +59,8 @@
     background-color: var(--surface);
     color: var(--foreground);
     font-family: var(--font-body);
-    font-size: 18px;
-    line-height: 1.6;
+    font-size: 16px;
+    line-height: 1.5;
   }
 
   /* Prefere `system`: se não houver classe `.light` ou `.dark`, usa media query. */
