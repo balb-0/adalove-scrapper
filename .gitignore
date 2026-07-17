@@ -1,0 +1,37 @@
+# deps
+node_modules/
+.pnpm-store/
+
+# builds
+dist/
+.output/
+.vinxi/
+.tanstack/
+.wxt/
+.vercel/
+
+# extension outputs
+packages/extension/.output/
+packages/extension/dist-chrome/
+packages/extension/dist-firefox/
+packages/extension/*.zip
+
+# env
+.env
+.env.local
+.env.*.local
+
+# editors / os
+.DS_Store
+.idea/
+.vscode/*
+!.vscode/settings.json
+!.vscode/extensions.json
+
+# logs
+*.log
+npm-debug.log*
+pnpm-debug.log*
+
+# test
+coverage/
