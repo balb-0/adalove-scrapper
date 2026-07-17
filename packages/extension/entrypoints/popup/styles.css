@@ -1,0 +1,134 @@
+:root {
+  --surface: #FAF7F0;
+  --surface-elevated: #FFFFFF;
+  --surface-muted: #F2F2F2;
+  --foreground: #161220;
+  --foreground-muted: #8C8895;
+  --border: #E0E0E0;
+  --primary: #412B74;
+  --primary-fg: #FFFFFF;
+  --accent: #F26E02;
+  --accent-fg: #FFFFFF;
+  --danger: #FF4545;
+  --danger-fg: #FFFFFF;
+  --success: #10B981;
+
+  --font-display: 'Macondo', cursive;
+  --font-mono: 'JetBrains Mono', monospace;
+}
+
+@media (prefers-color-scheme: dark) {
+  :root {
+    --surface: #161220;
+    --surface-elevated: #251E32;
+    --surface-muted: #2D253F;
+    --foreground: #F9F9F9;
+    --foreground-muted: #B3B3C3;
+    --border: #2D253F;
+    --primary: #A183E3;
+    --primary-fg: #161220;
+    --accent: #FF8C42;
+    --accent-fg: #161220;
+    --danger: #FF4545;
+  }
+}
+
+* { box-sizing: border-box; }
+
+html, body {
+  margin: 0;
+  padding: 0;
+  background: var(--surface);
+  color: var(--foreground);
+  font-family: var(--font-display);
+  width: 320px;
+}
+
+.popup {
+  padding: 16px;
+}
+
+.header {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  margin-bottom: 12px;
+}
+
+.title {
+  font-size: 20px;
+  color: var(--primary);
+  margin: 0;
+}
+
+.version {
+  font-family: var(--font-mono);
+  font-size: 10px;
+  color: var(--foreground-muted);
+}
+
+.status {
+  font-family: var(--font-mono);
+  font-size: 12px;
+  margin: 12px 0;
+  color: var(--foreground-muted);
+  min-height: 1.4em;
+  line-height: 1.4;
+}
+
+.status.error { color: var(--danger); }
+.status.ok { color: var(--success); }
+
+.btn {
+  display: block;
+  width: 100%;
+  padding: 12px;
+  font-family: var(--font-display);
+  font-size: 16px;
+  border: none;
+  border-radius: 8px;
+  background: var(--primary);
+  color: var(--primary-fg);
+  cursor: pointer;
+  transition: filter .15s;
+}
+
+.btn:hover:not(:disabled) { filter: brightness(1.1); }
+.btn:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+.progress {
+  margin: 12px 0;
+  font-family: var(--font-mono);
+  font-size: 11px;
+  color: var(--foreground-muted);
+}
+
+.progress-bar {
+  height: 4px;
+  background: var(--surface-muted);
+  border-radius: 2px;
+  overflow: hidden;
+  margin-top: 4px;
+}
+
+.progress-fill {
+  height: 100%;
+  background: var(--accent);
+  transition: width .2s ease-out;
+}
+
+.footer {
+  margin-top: 16px;
+  padding-top: 12px;
+  border-top: 1px solid var(--border);
+  font-family: var(--font-mono);
+  font-size: 10px;
+  color: var(--foreground-muted);
+  text-align: center;
+}
+
+.footer a { color: var(--primary); text-decoration: none; }
+.footer a:hover { text-decoration: underline; }
