@@ -16,12 +16,21 @@ import { PLACEHOLDER_AULA_TITULO } from './types.ts';
  * Não coleta links dos autoestudos — isso é responsabilidade do scraper
  * (abre modal → coleta <a href> → fecha), que preenche `autoestudo.links` depois.
  */
+interface CardParseado {
+  tipo: TipoCard;
+  coluna: ColunaKanban;
+  aula: Aula | null;      // populado se tipo=aula|grupo
+  auto: Autoestudo | null; // populado se tipo=autoestudo
+  ordemNoDom: number;      // pra tie-breakers
+}
+
 export function parseKanban(root: ParentNode): Kanban {
-  const aulas: Aula[] = [];
+  const cardsParseados: CardParseado[] = [];
   const colunas = Array.from(
     root.querySelectorAll<HTMLElement>('[data-rbd-droppable-id]'),
   );
 
+  let ordem = 0;
   for (const coluna of colunas) {
     const colunaId = normalizeColuna(coluna.dataset.rbdDroppableId ?? '');
     if (!colunaId) continue;
@@ -32,8 +41,6 @@ export function parseKanban(root: ParentNode): Kanban {
       ),
     );
 
-    let aulaAtual: Aula | null = null;
-
     for (const card of cardsNaColuna) {
       const tipo = detectarTipo(card);
       if (!tipo) continue;
@@ -41,18 +48,43 @@ export function parseKanban(root: ParentNode): Kanban {
       if (tipo === 'aula' || tipo === 'grupo') {
         const aula = parseAula(card, tipo, colunaId);
         if (aula) {
-          aulas.push(aula);
-          aulaAtual = aula;
+          cardsParseados.push({
+            tipo,
+            coluna: colunaId,
+            aula,
+            auto: null,
+            ordemNoDom: ordem++,
+          });
         }
       } else {
         const auto = parseAutoestudo(card, colunaId);
         if (!auto) continue;
-        if (!aulaAtual) {
-          aulaAtual = criarAulaPlaceholder(colunaId);
-          aulas.push(aulaAtual);
-        }
-        aulaAtual.autoestudos.push(auto);
+        cardsParseados.push({
+          tipo,
+          coluna: colunaId,
+          aula: null,
+          auto,
+          ordemNoDom: ordem++,
+        });
       }
+    }
+  }
+
+  const aulas = cardsParseados
+    .filter((c): c is CardParseado & { aula: Aula } => c.aula !== null)
+    .map((c) => c.aula);
+
+  const autoestudos = cardsParseados.filter(
+    (c): c is CardParseado & { auto: Autoestudo } => c.auto !== null,
+  );
+
+  for (const cardAuto of autoestudos) {
+    const alvo = escolherAulaPara(cardAuto, cardsParseados, aulas);
+    if (alvo) {
+      alvo.autoestudos.push(cardAuto.auto);
+    } else {
+      const placeholder = getOrCriarPlaceholder(aulas, cardAuto.coluna);
+      placeholder.autoestudos.push(cardAuto.auto);
     }
   }
 
@@ -63,6 +95,66 @@ export function parseKanban(root: ParentNode): Kanban {
     aulas,
     parsedAt: Date.now(),
   };
+}
+
+/**
+ * Escolhe a aula que "pertence" a este autoestudo. Prioridades:
+ *  1. Mesma coluna kanban + aula imediatamente anterior no DOM (padrão antigo — quando o aluno não moveu os cards)
+ *  2. Aula ÚNICA com o mesmo eixo do autoestudo (comum quando aluno move autoestudos pra "doing")
+ *  3. Múltiplas aulas com mesmo eixo → escolhe a de data mais próxima
+ *  4. null → cai no placeholder
+ */
+function escolherAulaPara(
+  cardAuto: CardParseado,
+  todos: CardParseado[],
+  aulas: Aula[],
+): Aula | null {
+  // 1. Aula imediatamente anterior no DOM, mesma coluna
+  const anteriores = todos
+    .filter(
+      (c) =>
+        c.coluna === cardAuto.coluna &&
+        c.aula !== null &&
+        c.ordemNoDom < cardAuto.ordemNoDom,
+    )
+    .sort((a, b) => b.ordemNoDom - a.ordemNoDom);
+  const proximaAcima = anteriores[0]?.aula;
+  if (proximaAcima) return proximaAcima;
+
+  // 2 e 3. Match por eixo
+  const eixo = cardAuto.auto?.eixo;
+  if (eixo) {
+    const candidatas = aulas.filter((a) => a.eixo === eixo);
+    if (candidatas.length === 1) return candidatas[0] ?? null;
+    if (candidatas.length > 1) {
+      // escolhe a de data mais próxima (compara YYYYMMDD)
+      const key = dataToSort(cardAuto.auto?.eixo === null ? null : findFirstDataFromCard(cardAuto));
+      return candidatas.reduce<Aula>((melhor, cur) => {
+        const dM = Math.abs(parseInt(dataToSort(melhor.data), 10) - parseInt(key, 10));
+        const dC = Math.abs(parseInt(dataToSort(cur.data), 10) - parseInt(key, 10));
+        return dC < dM ? cur : melhor;
+      }, candidatas[0]!);
+    }
+  }
+
+  return null;
+}
+
+function findFirstDataFromCard(_c: CardParseado): string | null {
+  // Autoestudos raramente têm data no card do kanban.
+  // Se tiver, viria como Aula.data — aqui só temos Autoestudo, e ele não guarda data.
+  // Retorna null pra fallback de sort neutro.
+  return null;
+}
+
+function getOrCriarPlaceholder(aulas: Aula[], coluna: ColunaKanban): Aula {
+  const existente = aulas.find(
+    (a) => a.id === `placeholder-${coluna}`,
+  );
+  if (existente) return existente;
+  const novo = criarAulaPlaceholder(coluna);
+  aulas.push(novo);
+  return novo;
 }
 
 /** Discriminador de tipo do card: id do wrapper `<div id="XXX-solido">` do header. */

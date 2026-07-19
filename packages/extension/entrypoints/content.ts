@@ -75,7 +75,7 @@ async function extrairLinksDoCard(card: HTMLElement): Promise<Link[]> {
     const modal = await esperarModal(4000);
     if (!modal) continue;
 
-    const links = coletarLinksDoModal(modal);
+    const links = await coletarLinksDoModal(modal);
     await fecharModal(modal);
     return links;
   }
@@ -128,20 +128,9 @@ async function esperarModal(timeoutMs: number): Promise<HTMLElement | null> {
   return null;
 }
 
-function coletarLinksDoModal(modal: HTMLElement): Link[] {
+async function coletarLinksDoModal(modal: HTMLElement): Promise<Link[]> {
   const links: Link[] = [];
   const seen = new Set<string>();
-
-  const abas = Array.from(modal.querySelectorAll<HTMLButtonElement>('button')).filter(
-    (b) => {
-      const txt = b.innerText.trim().toLowerCase();
-      return (
-        txt.length > 2 &&
-        txt.length < 24 &&
-        !['fechar', 'ver mais', 'cancelar', 'entendi', 'mudar'].includes(txt)
-      );
-    },
-  );
 
   const coletarAgora = () => {
     for (const a of Array.from(modal.querySelectorAll<HTMLAnchorElement>('a[href^="http"]'))) {
@@ -152,15 +141,28 @@ function coletarLinksDoModal(modal: HTMLElement): Link[] {
     }
   };
 
+  const abas = Array.from(modal.querySelectorAll<HTMLButtonElement>('button')).filter(
+    (b) => {
+      const txt = b.innerText.trim().toLowerCase();
+      return (
+        txt.length > 2 &&
+        txt.length < 24 &&
+        !['fechar', 'ver mais', 'cancelar', 'entendi', 'mudar', 'x'].includes(txt)
+      );
+    },
+  );
+
+  // Coleta o que já tá visível (aba padrão do modal).
+  coletarAgora();
+
   if (abas.length > 1) {
-    coletarAgora();
     for (const aba of abas) {
       aba.click();
-      // sync — o modal já tá aberto, a troca de aba é imediata no React
+      // React precisa pintar o conteúdo da nova aba antes da gente ler.
+      // 300ms é folgado; abaixo disso vi coletas vazias em cards com abas.
+      await sleep(300);
       coletarAgora();
     }
-  } else {
-    coletarAgora();
   }
 
   return links;

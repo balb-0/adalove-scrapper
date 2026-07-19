@@ -113,3 +113,92 @@ describe('parseKanban — fixture Adalove.html', () => {
     expect(prob?.eixo).toBe('MTF');
   });
 });
+
+describe('parseKanban — autoestudos migrados entre colunas', () => {
+  // Bug real do dia 06/08: aluno moveu autoestudos de Probabilidade
+  // pra "doing". Parser antigo tratava cada coluna como bucket isolado
+  // e o autoestudo caía num placeholder "Sem aula associada".
+  const html = `
+    <div>
+      <h6>Semana 01</h6>
+      <div data-rbd-droppable-id="toDo">
+        ${cardAula('aula-prob', 'chalkboard-user-solido', 'Probabilidade e Estatística Descritiva', {
+          data: '06/08/2026', hora: '10:00h', prof: 'Geraldo', eixo: 'MTF',
+        })}
+        ${cardAula('aula-design', 'chalkboard-user-solido', 'Design Lab: Definição de Escopo', {
+          eixo: 'UEX',
+        })}
+      </div>
+      <div data-rbd-droppable-id="doing">
+        ${cardAutoestudo('auto-video-prob', 'Videoaula: Probabilidade condicional', 'MTF')}
+        ${cardAutoestudo('auto-blueprint', 'Exemplo de Service Blueprint', 'UEX')}
+      </div>
+    </div>
+  `;
+  const { document } = parseHTML(html);
+  const kanban = parseKanban(document);
+
+  it('videoaula MTF vai pra Probabilidade (não pra Design Lab nem placeholder)', () => {
+    const prob = kanban.aulas.find((a) => a.titulo.startsWith('Probabilidade'));
+    const design = kanban.aulas.find((a) => a.titulo.startsWith('Design Lab'));
+    expect(prob?.autoestudos.map((a) => a.titulo)).toContain(
+      'Videoaula: Probabilidade condicional',
+    );
+    expect(design?.autoestudos.map((a) => a.titulo)).not.toContain(
+      'Videoaula: Probabilidade condicional',
+    );
+  });
+
+  it('blueprint UEX vai pra Design Lab', () => {
+    const design = kanban.aulas.find((a) => a.titulo.startsWith('Design Lab'));
+    expect(design?.autoestudos.map((a) => a.titulo)).toContain(
+      'Exemplo de Service Blueprint',
+    );
+  });
+
+  it('não cria placeholder "Sem aula associada" quando eixo bate', () => {
+    const placeholder = kanban.aulas.find((a) => a.titulo.startsWith('Sem aula'));
+    expect(placeholder).toBeUndefined();
+  });
+});
+
+// helpers pros fixtures sintéticos
+function cardAula(
+  id: string,
+  icone: string,
+  titulo: string,
+  info: { data?: string; hora?: string; prof?: string; eixo?: string } = {},
+): string {
+  const clock =
+    info.data || info.hora
+      ? `<div class="info-card-activity-children">
+           <div id="clock-solido"></div>
+           <p>${info.data ?? ''} ${info.hora ? `- ${info.hora}` : ''}</p>
+         </div>`
+      : '';
+  const prof = info.prof
+    ? `<div class="info-card-activity-children">
+         <div id="person-chalkboard-solido"></div>
+         <p>${info.prof}</p>
+       </div>`
+    : '';
+  const eixo = info.eixo
+    ? `<div class="info-card-activity-children">
+         <div id="circle-nodes-solido"></div>
+         <p><span>Eixo: </span><span>${info.eixo}</span></p>
+       </div>`
+    : '';
+  return `<div data-rbd-draggable-id="${id}" role="button">
+    <div class="header-card-activity">
+      <div class="header-card-activity-children">
+        <div id="${icone}"></div>
+        <span class="title-card-activity">${titulo}</span>
+      </div>
+    </div>
+    <div class="infos-card-activity">${clock}${prof}${eixo}</div>
+  </div>`;
+}
+
+function cardAutoestudo(id: string, titulo: string, eixo: string): string {
+  return cardAula(id, 'book-open-reader-solido', titulo, { eixo });
+}
